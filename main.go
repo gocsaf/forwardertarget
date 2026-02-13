@@ -148,7 +148,7 @@ func main() {
 	flag.IntVar(&port, "p", defaultPort, "port of the forward target (shorthand)")
 	flag.StringVar(&host, "host", defaultHost, "host of the forward target")
 	flag.StringVar(&host, "h", defaultHost, "host of the forward target (shorthand)")
-	flag.Int64Var(&maxUploadSize, "maxupload", defaultMaxUploadSize, "max upload size")
+	flag.Int64Var(&maxUploadSize, "maxupload", defaultMaxUploadSize, "max upload size in bytes")
 	flag.Int64Var(&maxUploadSize, "m", defaultMaxUploadSize, "max upload size (shorthand)")
 	flag.Parse()
 	c := controller{
