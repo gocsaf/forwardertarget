@@ -31,7 +31,7 @@ type controller struct {
 
 func (c *controller) forwardTarget(rw http.ResponseWriter, req *http.Request) {
 	if req.Method != http.MethodPost {
-		http.Error(rw, "expecting POST request", http.StatusBadRequest)
+		http.Error(rw, "expecting POST request", http.StatusNotFound)
 		return
 	}
 	defer req.Body.Close()
