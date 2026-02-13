@@ -57,6 +57,20 @@ func (c *controller) forwardTarget(rw http.ResponseWriter, req *http.Request) {
 		return sb.String(), nil
 	}
 
+	decodeHash := func(r io.Reader, target *[]byte, name string) bool {
+		h, err := toString(r)
+		if err != nil {
+			http.Error(rw, err.Error(), http.StatusBadRequest)
+			return false
+		}
+		if *target, err = hex.DecodeString(h); err != nil {
+			log.Printf("error: Decoding %s from hex failed: %v\n", name, err)
+			http.Error(rw, err.Error(), http.StatusBadRequest)
+			return false
+		}
+		return true
+	}
+
 	for {
 		part, err := r.NextPart()
 		if err != nil {
@@ -78,24 +92,12 @@ func (c *controller) forwardTarget(rw http.ResponseWriter, req *http.Request) {
 				return
 			}
 		case "hash-256":
-			h, err := toString(part)
-			if err != nil {
-				http.Error(rw, err.Error(), http.StatusBadRequest)
+			if !decodeHash(part, &s256, "hash-256") {
 				return
-			}
-			if s256, err = hex.DecodeString(h); err != nil {
-				log.Printf("error: Decoding hash-256 from hex failed: %v\n", err)
-				http.Error(rw, err.Error(), http.StatusBadRequest)
 			}
 		case "hash-512":
-			h, err := toString(part)
-			if err != nil {
-				http.Error(rw, err.Error(), http.StatusBadRequest)
+			if !decodeHash(part, &s512, "hash-512") {
 				return
-			}
-			if s512, err = hex.DecodeString(h); err != nil {
-				log.Printf("error: Decoding hash-512 from hex failed: %v\n", err)
-				http.Error(rw, err.Error(), http.StatusBadRequest)
 			}
 		case "validation_status":
 			vs, err := toString(part)
