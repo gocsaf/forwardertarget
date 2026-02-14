@@ -32,7 +32,7 @@ type database struct {
 	db *sql.DB
 }
 
-func newDatabase(filename string) (*database, error) {
+func newDatabase(ctx context.Context, filename string) (*database, error) {
 	create := false
 	if _, err := os.Stat(filename); err != nil {
 		if !errors.Is(err, os.ErrNotExist) {
@@ -46,7 +46,7 @@ func newDatabase(filename string) (*database, error) {
 		return nil, fmt.Errorf("cannot open database %q: %w", filename, err)
 	}
 	if create {
-		if _, err := db.Exec(schema); err != nil {
+		if _, err := db.ExecContext(ctx, schema); err != nil {
 			return nil, fmt.Errorf("creating database failed: %w",
 				errors.Join(err, db.Close()))
 		}

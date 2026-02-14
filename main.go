@@ -11,6 +11,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"crypto/sha256"
 	"crypto/sha512"
 	"encoding/hex"
@@ -22,8 +23,11 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"os"
+	"os/signal"
 	"strconv"
 	"strings"
+	"syscall"
 
 	"github.com/klauspost/compress/zstd"
 )
@@ -31,6 +35,13 @@ import (
 type controller struct {
 	maxUploadSize int64
 	db            *database
+}
+
+type config struct {
+	port          int
+	host          string
+	maxUploadSize int64
+	store         string
 }
 
 func (c *controller) forwardTarget(rw http.ResponseWriter, req *http.Request) {
@@ -197,19 +208,17 @@ func findElement(doc any, path string) any {
 	return doc
 }
 
-type config struct {
-	port          int
-	host          string
-	maxUploadSize int64
-	store         string
-}
-
 func run(cfg *config) error {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	ctx, stop := signal.NotifyContext(ctx, os.Interrupt, syscall.SIGKILL, syscall.SIGTERM)
+	defer stop()
+
 	c := controller{
 		maxUploadSize: cfg.maxUploadSize,
 	}
 	if cfg.store != "" {
-		db, err := newDatabase(cfg.store)
+		db, err := newDatabase(ctx, cfg.store)
 		if err != nil {
 			return fmt.Errorf("database error: %w", err)
 		}
@@ -219,7 +228,26 @@ func run(cfg *config) error {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/api/v1/import", c.forwardTarget)
 	addr := net.JoinHostPort(cfg.host, strconv.Itoa(cfg.port))
-	return http.ListenAndServe(addr, mux)
+	srv := &http.Server{
+		Addr:    addr,
+		Handler: mux,
+	}
+	srvErrors := make(chan error)
+	done := make(chan struct{})
+	go func() {
+		defer close(done)
+		if err := srv.ListenAndServe(); err != http.ErrServerClosed {
+			srvErrors <- err
+		}
+	}()
+	var err error
+	select {
+	case <-ctx.Done():
+		srv.Shutdown(ctx)
+	case err = <-srvErrors:
+	}
+	<-done
+	return err
 }
 
 func main() {
