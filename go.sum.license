@@ -5,11 +5,3 @@
 //
 // SPDX-FileCopyrightText: 2026 German Federal Office for Information Security (BSI) <https://www.bsi.bund.de>
 //  Software-Engineering: 2026 Intevation GmbH <https://intevation.de>
-
-module github.com/gocsaf/forwardertarget
-
-go 1.25.0
-
-require github.com/mattn/go-sqlite3 v1.14.34
-
-require github.com/klauspost/compress v1.18.4
