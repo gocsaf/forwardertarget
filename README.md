@@ -58,7 +58,8 @@ An simple example how to send advisories to this endpoint
 via [curl](https://curl.se/) can be found [here](./contrib/upload.sh).
 
 ```
-$ ./contrib/upload.sh example/bsi-2022-0001.json
+$ wget https://raw.githubusercontent.com/oasis-tcs/csaf/refs/heads/master/csaf_2.0/examples/csaf/bsi-2022-0001.json
+$ ./contrib/upload.sh bsi-2022-0001.json
 ```
 
 By default **forwardertarget** only consumes the uploaded documents.
