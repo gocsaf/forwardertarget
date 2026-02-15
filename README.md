@@ -82,7 +82,7 @@ CREATE TABLE sqlite_sequence(name,seq);
 Running **forwardertarget** in this mode is useful for statistical and
 archiving purposes.
 
-To save space the advisories are store in [Zstandard](https://facebook.github.io/zstd/) form.
+To save space the advisories blobs are [Zstandard](https://facebook.github.io/zstd/) compressed.
 
 If you want to extract the original files you can do something like this:
 
@@ -95,7 +95,7 @@ $ cd bsi_advisories
 $ zstd -d --rm *.zst
 ```
 
-This will leave the uncompressed JSON files of the publisher "Bundesamt für Sicherheit in der Informationstechnik" in the folder `bsi_advisories`.
+This will leave the uncompressed JSON files of the publisher `"Bundesamt für Sicherheit in der Informationstechnik"` in the folder `bsi_advisories`.
 
 ## License
 
@@ -111,7 +111,7 @@ Source code written for **forwardertarget** was placed under the
  Software-Engineering: 2026 Intevation GmbH <https://intevation.de>
 ```
 
-forwardertarget depends on third party Free Software components which have their
+**forwardertarget** depends on third party Free Software components which have their
 own right holders and licenses. To our best knowledge
 (at the time when they were added)
 the dependencies are upwards compatible with the forwardertarget main license.
