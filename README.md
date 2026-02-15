@@ -13,6 +13,8 @@
 A little web server offering a demo endpoint for the forwarding
 logic used in [csaf_downloader](https://github.com/gocsaf/csaf/blob/main/docs/csaf_downloader.md#forwarding) and [ISDuBA](https://github.com/ISDuBA/ISDuBA/blob/main/docs/forwarder.md).
 
+An earlier Java based endpoint can be found [here](https://github.com/mfd2007/csaf_upload_interface/).
+
 ## Howto build
 
 You need at least [Go 1.25](https://go.dev/dl/) to compile it.
@@ -23,7 +25,7 @@ cd forwardertarget
 go build
 ```
 
-Place the resulting `forwardertarget` into your `PATH`.
+Place the resulting `forwardertarget` binary into your `PATH`.
 
 ## Usage
 
@@ -48,7 +50,7 @@ Usage of forwardertarget:
     	SQLite3 database to store documents in
 ```
 
-Starting `forwarding` with its default arguments will start
+Starting **forwardertarget** with its default arguments will start
 the web server bound to localhost port 8888. Forwarded documents
 to 512 MiB (+1 KiB metadata) will be accepted by the endpoint.
 
@@ -59,7 +61,7 @@ via [curl](https://curl.se/) can be found [here](./contrib/upload.sh).
 $ ./contrib/upload.sh example/bsi-2022-0001.json
 ```
 
-By default forwardertarget only consumes the uploaded documents.
+By default **forwardertarget** only consumes the uploaded documents.
 With the `-s|--store` flag you can tell it to store the documents
 in a [SQLite3](https://sqlite.org/) database. The database file
 will be created at start if it does not exist.
@@ -76,11 +78,12 @@ CREATE TABLE documents (
 CREATE TABLE sqlite_sequence(name,seq);
 ```
 
-Running forwardertarget in this mode is useful for statistics and
+Running **forwardertarget** in this mode is useful for statistics and
 archiving.
 
-To save space the advisories are store in [Zstandard](https://facebook.github.io/zstd/) form. If you want to extract the original
-files you can do something like this:
+To save space the advisories are store in [Zstandard](https://facebook.github.io/zstd/) form.
+
+If you want to extract the original files you can do something like this:
 
 ```
 $ mkdir bsi_advisories
@@ -95,9 +98,9 @@ This will leave the uncompressed JSON files of the publisher "Bundesamt für Sic
 
 ## License
 
-forwardertarget is Free Software.
+**forwardertarget** is Free Software.
 
-Source code written for forwardertarget was placed under the
+Source code written for **forwardertarget** was placed under the
 [Apache License, Version 2.0](./LICENSE).
 
 ```
