@@ -15,7 +15,7 @@ logic used in [csaf_downloader](https://github.com/gocsaf/csaf/blob/main/docs/cs
 
 An earlier Java based endpoint can be found [here](https://github.com/mfd2007/csaf_upload_interface/).
 
-## Howto build
+## Build
 
 You need at least [Go 1.25](https://go.dev/dl/) to compile it.
 
