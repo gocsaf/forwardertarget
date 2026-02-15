@@ -50,11 +50,11 @@ Usage of forwardertarget:
     	SQLite3 database to store documents in
 ```
 
-Starting **forwardertarget** with its default arguments will start
-the web server bound to localhost port 8888. Forwarded documents
-to 512 MiB (+1 KiB metadata) will be accepted by the endpoint.
+Starting **forwardertarget** with its default arguments will bind
+the web server to localhost port 8888. Forwarded documents
+up to 512 MiB (+1 KiB metadata) will be accepted by the endpoint.
 
-An simple example how to send advisories to this endpoint
+A simple example how to send advisories to this endpoint
 via [curl](https://curl.se/) can be found [here](./contrib/upload.sh).
 
 ```
@@ -79,8 +79,8 @@ CREATE TABLE documents (
 CREATE TABLE sqlite_sequence(name,seq);
 ```
 
-Running **forwardertarget** in this mode is useful for statistics and
-archiving.
+Running **forwardertarget** in this mode is useful for statistical and
+archiving purposes.
 
 To save space the advisories are store in [Zstandard](https://facebook.github.io/zstd/) form.
 
