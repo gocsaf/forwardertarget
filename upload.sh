@@ -1,4 +1,11 @@
 #!/usr/bin/env bash
+# This file is Free Software under the Apache-2.0 License
+# without warranty, see README.md and LICENSES/Apache-2.0.txt for details.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+# SPDX-FileCopyrightText: 2026 German Federal Office for Information Security (BSI) <https://www.bsi.bund.de>
+# Software-Engineering: 2026 Intevation GmbH <https://intevation.de>
 
 ENDPOINT="http://localhost:8888/api/v1/import"
 SHA256=`sha256sum $1 | cut -f 1 -d ' '`
@@ -8,7 +15,7 @@ echo SHA512: $SHA512
 # validation_status: valid, invalid, not_validated
 validation_status=valid
 
-curl -X POST \
+curl -s -X POST \
     -F advisory=@$1 \
     -F validation_status=$validation_status \
     -F "hash-256"=$SHA256 \

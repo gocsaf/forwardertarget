@@ -27,6 +27,7 @@ import (
 	"os/signal"
 	"strconv"
 	"strings"
+	"sync/atomic"
 	"syscall"
 
 	"github.com/klauspost/compress/zstd"
@@ -35,6 +36,7 @@ import (
 type controller struct {
 	maxUploadSize int64
 	db            *database
+	counter       atomic.Int64
 }
 
 type config struct {
@@ -158,13 +160,16 @@ func (c *controller) forwardTarget(rw http.ResponseWriter, req *http.Request) {
 		http.Error(rw, "hash-512 does not match", http.StatusBadRequest)
 		return
 	}
-	if zenc != nil {
+	var docID int64
+	if zenc == nil {
+		docID = c.counter.Add(1) - 1
+	} else {
 		if err := zenc.Close(); err != nil {
-			log.Printf("error: zst compressin failed: %v\n", err)
+			log.Printf("error: zstd compression failed: %v\n", err)
 			http.Error(rw, err.Error(), http.StatusBadRequest)
 			return
 		}
-		if err := c.db.store(
+		if docID, err = c.db.store(
 			req.Context(),
 			filename,
 			findString(document, "document/publisher/name"),
@@ -177,13 +182,16 @@ func (c *controller) forwardTarget(rw http.ResponseWriter, req *http.Request) {
 			return
 		}
 	}
-	success := map[string]any{
-		"status": "ok",
-		"id":     42,
+	success := struct {
+		Status string `json:"status"`
+		ID     int64  `json:"id"`
+	}{
+		Status: "ok",
+		ID:     docID,
 	}
 	rw.Header().Set("Content-Type", "application/json")
-	rw.WriteHeader(http.StatusOK)
-	json.NewEncoder(rw).Encode(success)
+	rw.WriteHeader(http.StatusCreated)
+	json.NewEncoder(rw).Encode(&success)
 }
 
 func findString(doc any, path string) *string {

@@ -62,16 +62,18 @@ func (db *database) store(
 	ctx context.Context,
 	filename, publisher, trackingID, validationStatus *string,
 	original []byte,
-) error {
+) (int64, error) {
 	const insertSQL = `` +
 		`INSERT INTO documents` +
 		`(filename, publisher, tracking_id, validation_status, original)` +
-		`VALUES(?, ?, ?, ?, ?)`
-	if _, err := db.db.ExecContext(
+		`VALUES(?, ?, ?, ?, ?) ` +
+		`RETURNING id`
+	var docID int64
+	if err := db.db.QueryRowContext(
 		ctx, insertSQL,
 		filename, publisher, trackingID, validationStatus, original,
-	); err != nil {
-		return fmt.Errorf("inserting document failed: %w", err)
+	).Scan(&docID); err != nil {
+		return 0, fmt.Errorf("inserting document failed: %w", err)
 	}
-	return nil
+	return docID, nil
 }
