@@ -74,6 +74,7 @@ CREATE TABLE documents (
   publisher         text,
   tracking_id       text,
   validation_status text,
+  url               text,
   original          BLOB NOT NULL
 );
 CREATE TABLE sqlite_sequence(name,seq);

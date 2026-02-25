@@ -65,6 +65,7 @@ func (c *controller) forwardTarget(rw http.ResponseWriter, req *http.Request) {
 		s256, s512       []byte
 		original         bytes.Buffer
 		validationStatus *string
+		documentURL      *string
 		filename         *string
 		zenc             *zstd.Encoder
 	)
@@ -132,6 +133,13 @@ func (c *controller) forwardTarget(rw http.ResponseWriter, req *http.Request) {
 			if !decodeHash(part, &s512, "hash-512") {
 				return
 			}
+		case "document_url":
+			du, err := toString(part)
+			if err != nil {
+				http.Error(rw, err.Error(), http.StatusBadRequest)
+				return
+			}
+			documentURL = &du
 		case "validation_status":
 			vs, err := toString(part)
 			if err != nil {
@@ -175,6 +183,7 @@ func (c *controller) forwardTarget(rw http.ResponseWriter, req *http.Request) {
 			findString(document, "document/publisher/name"),
 			findString(document, "document/tracking/id"),
 			validationStatus,
+			documentURL,
 			original.Bytes(),
 		); err != nil {
 			log.Printf("error: data base error: %v\n", err)

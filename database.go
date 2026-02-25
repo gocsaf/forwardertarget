@@ -25,6 +25,7 @@ CREATE TABLE documents (
   publisher         text,
   tracking_id       text,
   validation_status text,
+  url               text,
   original          BLOB NOT NULL
 );`
 
@@ -60,18 +61,31 @@ func (db *database) close() error {
 
 func (db *database) store(
 	ctx context.Context,
-	filename, publisher, trackingID, validationStatus *string,
+	filename, publisher,
+	trackingID, validationStatus,
+	url *string,
 	original []byte,
 ) (int64, error) {
 	const insertSQL = `` +
-		`INSERT INTO documents` +
-		`(filename, publisher, tracking_id, validation_status, original)` +
-		`VALUES(?, ?, ?, ?, ?) ` +
+		`INSERT INTO documents (` +
+		` filename,` +
+		` publisher,` +
+		` tracking_id,` +
+		` validation_status,` +
+		` url,` +
+		` original` +
+		`)` +
+		`VALUES(?, ?, ?, ?, ?, ?) ` +
 		`RETURNING id`
 	var docID int64
 	if err := db.db.QueryRowContext(
 		ctx, insertSQL,
-		filename, publisher, trackingID, validationStatus, original,
+		filename,
+		publisher,
+		trackingID,
+		validationStatus,
+		url,
+		original,
 	).Scan(&docID); err != nil {
 		return 0, fmt.Errorf("inserting document failed: %w", err)
 	}
